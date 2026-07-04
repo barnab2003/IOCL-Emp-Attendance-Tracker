@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const connectDB = require('./config/db');
-
+const authRoutes = require('./routes/authRoutes');
 // Load env vars
 dotenv.config();
 
@@ -30,7 +30,7 @@ app.use(cors({
 app.get('/api/health', (req, res) => {
     res.status(200).json({ success: true, message: 'IOCL Server is running securely.' });
 });
-
+app.use('/api/auth', authRoutes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
