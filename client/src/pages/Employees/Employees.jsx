@@ -113,13 +113,26 @@ const Employees = () => {
             <div className="form-group">
               <label>Department</label>
               <select name="department" value={formData.department} onChange={handleChange}>
-                <option value="MECH">MECH</option>
-                <option value="CIVIL">CIVIL</option>
-                <option value="QC">QC</option>
-                <option value="HR">HR</option>
-                <option value="PROD">PROD</option>
-                <option value="FIN">FIN</option>
-                <option value="IS">IS</option>
+                <option value="MECH">MECH - Mechanical</option>
+                <option value="CIVIL">CIVIL - Civil Engineering</option>
+                <option value="QC">QC - Quality Control</option>
+                <option value="TS">TS - Technical Services</option>
+                <option value="INSP">INSP - Inspection</option>
+                <option value="MSC">MSC - Materials & Supply Chain</option>
+                <option value="ES">ES - Engineering Services</option>
+                <option value="F&S">F&S - Fire & Safety</option>
+                <option value="HSC">HSC - Health, Safety & Environment</option>
+                <option value="PSM">PSM - Process Safety Management</option>
+                <option value="FIN">FIN - Finance</option>
+                <option value="MEO">MEO - Maintenance & Engineering</option>
+                <option value="HR">HR - Human Resources</option>
+                <option value="IS">IS - Information Systems</option>
+                <option value="VIG">VIG - Vigilance</option>
+                <option value="MKT">MKT - Marketing</option>
+                <option value="PROD">PROD - Production</option>
+                <option value="PSU">PSU - Public Sector Utilities</option>
+                <option value="EM">EM - Energy Management</option>
+                <option value="INST">INST - Instrumentation</option>
               </select>
             </div>
 
@@ -145,7 +158,16 @@ const Employees = () => {
                 />
               </div>
             )}
-
+            <div className="form-group">
+              <label>Joining Date</label>
+              <input 
+                type="date" 
+                name="joiningDate" 
+                value={formData.joiningDate} 
+                onChange={handleChange} 
+                required 
+              />
+            </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
               Register
             </button>

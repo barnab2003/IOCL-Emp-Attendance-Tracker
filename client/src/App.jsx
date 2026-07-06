@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Login from './pages/Login/Login';
 import Employees from './pages/Employees/Employees';
 import EmployeeProfile from './pages/Employees/EmployeeProfile';
+import ManageDirectory from './pages/Employees/ManageDirectory';
 import Leaves from './pages/Leaves/Leaves';
 // New Components (We will build these next)
 import DataUpload from './pages/DataUpload/DataUpload';
@@ -66,6 +67,7 @@ const Sidebar = () => (
       <NavLink to="/upload" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Data Upload</NavLink>
       
       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '1.5rem 0 0.5rem', paddingLeft: '1rem' }}>PEOPLES & TEAMS</div>
+      <NavLink to="/manage-directory" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Manage Directory</NavLink>
       <NavLink to="/leaves" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Leave Manager</NavLink>
       <NavLink to="/trainees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trainee Manager</NavLink>
       <NavLink to="/employees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Register Employee</NavLink>
@@ -94,6 +96,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><AuthenticatedLayout><Dashboard /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/employees" element={<ProtectedRoute><AuthenticatedLayout><Employees /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/profile/:id" element={<ProtectedRoute><AuthenticatedLayout><EmployeeProfile /></AuthenticatedLayout></ProtectedRoute>} />
+          <Route path="/manage-directory" element={<ProtectedRoute><AuthenticatedLayout><ManageDirectory /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/leaves" element={<ProtectedRoute><AuthenticatedLayout><Leaves /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/upload" element={<ProtectedRoute><AuthenticatedLayout><DataUpload /></AuthenticatedLayout></ProtectedRoute>} />
           <Route path="/attendance" element={<ProtectedRoute><AuthenticatedLayout><AttendanceLogs /></AuthenticatedLayout></ProtectedRoute>} />

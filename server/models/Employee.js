@@ -33,6 +33,11 @@ const employeeSchema = new mongoose.Schema({
         enum: ['Employee', 'Apprentice', 'Intern'],
         default: 'Employee'
     },
+    joiningDate: {
+        type: Date,
+        required: true,
+        default: Date.now
+    },
     trainingEndDate: {
         type: Date,
         required: function() {
