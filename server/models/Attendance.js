@@ -10,20 +10,22 @@ const attendanceSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    sessions: [{
+        checkIn: { type: Date, required: true },
+        checkOut: { type: Date }
+    }],
+    totalMinutes: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
-        required: true,
-        enum: ['Present', 'Absent', 'Late', 'On Leave']
-    },
-    checkIn: {
-        type: Date
-    },
-    checkOut: {
-        type: Date
+        enum: ['Present', 'Absent', 'Half-Day'],
+        default: 'Absent'
     }
 }, { timestamps: true });
 
-// Ensure an employee can only have one attendance record per day
+// Ensure we only have one attendance document per employee per day
 attendanceSchema.index({ employeeId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

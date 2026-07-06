@@ -60,8 +60,13 @@ const AttendanceLogs = () => {
                     {log.status}
                   </span>
                 </td>
-                <td>{log.checkIn ? new Date(log.checkIn).toLocaleTimeString() : '--'}</td>
-                <td>{log.checkOut ? new Date(log.checkOut).toLocaleTimeString() : '--'}</td>
+                {/* Updated Columns for new schema */}
+                <td>{log.sessions?.length || 0} Punches</td>
+                <td>
+                  <span style={{ fontWeight: '500' }}>
+                    {Math.floor((log.totalMinutes || 0) / 60)}h {(log.totalMinutes || 0) % 60}m
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>

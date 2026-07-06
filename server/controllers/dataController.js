@@ -91,4 +91,91 @@ const exportEmployees = async (req, res, next) => {
     }
 };
 
-module.exports = { uploadEmployees, exportEmployees };
+// @desc    Upload Attendance Logs via Excel
+// @route   POST /api/data/upload-attendance
+// @access  Private (Admin)
+const uploadAttendance = async (req, res, next) => {
+    try {
+        if (!req.file) return next(new Error('Please upload an Excel file.'));
+
+        // cellDates: true ensures Excel times are parsed as JavaScript Date objects
+        const workbook = xlsx.read(req.file.buffer, { type: 'buffer', cellDates: true });
+        const sheetName = workbook.SheetNames[0];
+        const rows = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+        if (rows.length === 0) return next(new Error('The uploaded file is empty.'));
+
+        // 1. Fetch all employees to map EmpID to MongoDB ObjectIds
+        const employees = await Employee.find({}, '_id empId');
+        const empMap = {};
+        employees.forEach(emp => empMap[emp.empId] = emp._id);
+
+        // 2. Group all punch rows by Employee and Date
+        const attendanceMap = {};
+
+        for (const row of rows) {
+            if (!row.EmpID || !row.Date || !row.CheckIn) continue;
+
+            const objId = empMap[row.EmpID.toString()];
+            if (!objId) continue; // Skip if Employee ID doesn't exist in DB
+
+            // Normalize the date to midnight
+            const dateObj = new Date(row.Date);
+            dateObj.setHours(0, 0, 0, 0);
+            
+            const mapKey = `${objId}_${dateObj.getTime()}`;
+
+            if (!attendanceMap[mapKey]) {
+                attendanceMap[mapKey] = {
+                    employeeId: objId,
+                    date: dateObj,
+                    sessions: [],
+                    totalMinutes: 0
+                };
+            }
+
+            const checkInTime = new Date(row.CheckIn);
+            const checkOutTime = row.CheckOut ? new Date(row.CheckOut) : null;
+            
+            let sessionDuration = 0;
+            if (checkOutTime) {
+                // Calculate difference in minutes
+                sessionDuration = Math.floor((checkOutTime - checkInTime) / 1000 / 60);
+                if (sessionDuration < 0) sessionDuration = 0; 
+            }
+
+            attendanceMap[mapKey].sessions.push({ checkIn: checkInTime, checkOut: checkOutTime });
+            attendanceMap[mapKey].totalMinutes += sessionDuration;
+        }
+
+        // 3. Process the grouped data and enforce the 7-hour rule
+        let processedCount = 0;
+        const SEVEN_HOURS_IN_MINUTES = 420;
+
+        for (const key in attendanceMap) {
+            const record = attendanceMap[key];
+            
+            // Set status based on total time
+            record.status = record.totalMinutes >= SEVEN_HOURS_IN_MINUTES ? 'Present' : 'Absent';
+
+            await mongoose.model('Attendance').findOneAndUpdate(
+                { employeeId: record.employeeId, date: record.date },
+                { 
+                    $set: { 
+                        sessions: record.sessions,
+                        totalMinutes: record.totalMinutes,
+                        status: record.status 
+                    } 
+                },
+                { upsert: true, new: true }
+            );
+            processedCount++;
+        }
+
+        res.status(200).json({ success: true, message: `Successfully processed ${processedCount} daily attendance records.` });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { uploadEmployees, exportEmployees, uploadAttendance };
