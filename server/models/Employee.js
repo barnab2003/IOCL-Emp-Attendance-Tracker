@@ -26,6 +26,19 @@ const employeeSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['MECH', 'CIVIL', 'QC', 'TS', 'INSP', 'MSC', 'ES', 'F&S', 'HSC', 'PSM', 'FIN', 'MEO', 'HR', 'IS', 'VIG', 'MKT', 'PROD', 'PSU', 'EM', 'INST']
+    },
+    employeeType: {
+        type: String,
+        required: true,
+        enum: ['Employee', 'Apprentice', 'Intern'],
+        default: 'Employee'
+    },
+    trainingEndDate: {
+        type: Date,
+        required: function() {
+            // Training end date is required only if the user is an Apprentice or Intern
+            return this.employeeType === 'Apprentice' || this.employeeType === 'Intern';
+        }
     }
 }, { timestamps: true });
 

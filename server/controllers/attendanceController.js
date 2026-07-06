@@ -156,4 +156,21 @@ const checkOut = async (req, res, next) => {
     }
 };
 
-module.exports = { getAttendanceStats, checkIn, checkOut };
+// @desc    Get all attendance logs
+// @route   GET /api/attendance
+// @access  Private (Admin)
+const getAllAttendanceLogs = async (req, res, next) => {
+    try {
+        // Fetch logs and populate the employee details, sorted by newest first
+        const logs = await Attendance.find()
+            .populate('employeeId', 'name empId department')
+            .sort({ date: -1 });
+            
+        res.status(200).json({ success: true, data: logs });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update your exports at the bottom of the file:
+module.exports = { getAttendanceStats, checkIn, checkOut, getAllAttendanceLogs };

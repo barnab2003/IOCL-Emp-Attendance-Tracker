@@ -14,7 +14,7 @@ const attendanceRoutes = require('./routes/attendanceRoutes');
 // 2. Import Middleware & Jobs
 const errorHandler = require('./middleware/errorMiddleware');
 const startAbsenceCheckJob = require('./jobs/emailCron');
-
+const dataRoutes = require('./routes/dataRoutes');
 // Load environment variables
 dotenv.config();
 
@@ -60,7 +60,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/leaves', leaveRoutes);
 app.use('/api/attendance', attendanceRoutes);
-
+app.use('/api/data', dataRoutes);
 // Health check route
 app.get('/api/health', (req, res) => {
     res.status(200).json({ success: true, message: 'IOCL Server is running securely.' });
