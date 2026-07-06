@@ -4,12 +4,11 @@ import { AuthProvider, AuthContext } from './context/AuthContext';
 import ProtectedRoute from './components/Common/ProtectedRoute';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Login from './pages/Login/Login';
+import Employees from './pages/Employees/Employees';
+import Leaves from './pages/Leaves/Leaves';
 import './App.css';
 
-const Employees = () => <div><h1>Employees</h1></div>;
-const Leaves = () => <div><h1>Leaves</h1></div>;
-
-// Update TopHeader to include Logout
+// --- Header Component ---
 const TopHeader = () => {
   const { admin, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -24,20 +23,44 @@ const TopHeader = () => {
       <input type="text" className="search-bar" placeholder="Search Keyword..." />
       <div className="header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <span>👤 {admin?.username || 'Admin'}</span>
-        <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem' }}>Logout</button>
+        <button 
+          onClick={handleLogout} 
+          className="btn btn-outline" 
+          style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem' }}
+        >
+          Logout
+        </button>
       </div>
     </header>
   );
 };
 
-// ... Sidebar component remains exactly the same as before ...
+// --- Sidebar Component ---
 const Sidebar = () => (
-    <aside className="sidebar">
-      {/* ... previous Sidebar code ... */}
-    </aside>
+  <aside className="sidebar">
+    <div className="sidebar-logo">IOCL Tracker</div>
+    <nav>
+      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', paddingLeft: '1rem' }}>
+        MAIN MENU
+      </div>
+      <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+        Dashboard
+      </NavLink>
+      
+      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '1.5rem 0 0.5rem', paddingLeft: '1rem' }}>
+        PEOPLES & TEAMS
+      </div>
+      <NavLink to="/employees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+        Employees
+      </NavLink>
+      <NavLink to="/leaves" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+        Leaves
+      </NavLink>
+    </nav>
+  </aside>
 );
 
-// App Layout for Authenticated users
+// --- Layout Wrapper ---
 const AuthenticatedLayout = ({ children }) => (
   <div className="app-container">
     <Sidebar />
@@ -50,28 +73,37 @@ const AuthenticatedLayout = ({ children }) => (
   </div>
 );
 
+// --- Main App Root ---
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Login Route */}
+          {/* Public Route */}
           <Route path="/login" element={<Login />} />
           
-          {/* Protected Routes wrapped in Layout */}
+          {/* Protected Routes */}
           <Route path="/" element={
             <ProtectedRoute>
-              <AuthenticatedLayout><Dashboard /></AuthenticatedLayout>
+              <AuthenticatedLayout>
+                <Dashboard />
+              </AuthenticatedLayout>
             </ProtectedRoute>
           } />
+          
           <Route path="/employees" element={
             <ProtectedRoute>
-              <AuthenticatedLayout><Employees /></AuthenticatedLayout>
+              <AuthenticatedLayout>
+                <Employees />
+              </AuthenticatedLayout>
             </ProtectedRoute>
           } />
+          
           <Route path="/leaves" element={
             <ProtectedRoute>
-              <AuthenticatedLayout><Leaves /></AuthenticatedLayout>
+              <AuthenticatedLayout>
+                <Leaves />
+              </AuthenticatedLayout>
             </ProtectedRoute>
           } />
         </Routes>
