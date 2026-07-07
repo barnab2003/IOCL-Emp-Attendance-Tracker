@@ -1,54 +1,56 @@
-const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
+const Employee = require('../models/Employee');
 
-// Helper to generate JWT token payload
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '1d' // Token expires in 24 hours
+// Generate JWT Token
+const generateToken = (id, role) => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET || 'supersecretkey', {
+        expiresIn: '30d',
     });
 };
 
-// @desc    Auth admin & get token
+// @desc    Auth user & get token (Admin or Employee)
 // @route   POST /api/auth/login
 // @access  Public
-const loginAdmin = async (req, res) => {
-    const { email, password } = req.body;
-
+const login = async (req, res, next) => {
     try {
-        // Explicitly select password since we set 'select: false' in the Schema
-        const admin = await Admin.findOne({ email }).select('+password');
+        const { email, password } = req.body;
 
-        if (admin && (await admin.matchPassword(password))) {
-            res.json({
+        // 1. Check for Admin Login (Hardcoded for simplicity, or use your Admin DB model)
+        if (email === 'admin@iocl.com' && password === 'admin123') {
+            return res.status(200).json({
                 success: true,
-                token: generateToken(admin._id),
-                admin: {
-                    id: admin._id,
-                    username: admin.username,
-                    email: admin.email,
-                    role: admin.role
+                data: {
+                    _id: 'admin_id',
+                    name: 'System Admin',
+                    email: 'admin@iocl.com',
+                    role: 'Admin',
+                    token: generateToken('admin_id', 'Admin')
                 }
             });
-        } else {
-            res.status(401).json({ success: false, message: 'Invalid email or password' });
         }
+
+        // 2. Check for Employee Login
+        const employee = await Employee.findOne({ email });
+
+        // For production, you should use bcrypt to compare hashed passwords
+        if (employee && employee.password === password) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    _id: employee._id,
+                    name: employee.name,
+                    email: employee.email,
+                    role: 'Employee',
+                    token: generateToken(employee._id, 'Employee')
+                }
+            });
+        }
+
+        res.status(401);
+        return next(new Error('Invalid email or password'));
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        next(error);
     }
 };
 
-// @desc    Get current logged in admin details
-// @route   GET /api/auth/me
-// @access  Private
-const getMe = async (req, res) => {
-    try {
-        res.status(200).json({
-            success: true,
-            admin: req.admin
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-};
-
-module.exports = { loginAdmin, getMe };
+module.exports = { login };

@@ -26,7 +26,7 @@ const AttendanceLogs = () => {
   return (
     <div>
       <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-        🏠 Home / <strong>Attendance Logs</strong>
+        <strong>Attendance Logs</strong>
       </div>
       <h2 style={{ marginBottom: '1rem' }}>Daily Attendance Log</h2>
 

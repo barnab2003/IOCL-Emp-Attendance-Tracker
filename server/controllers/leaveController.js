@@ -1,56 +1,59 @@
 const Leave = require('../models/Leave');
-const sendEmail = require('../config/mailer');
-// @desc    Get all leaves (Optionally filter by status)
-// @route   GET /api/leaves
-// @access  Private (Admin only)
-const getLeaves = async (req, res, next) => {
+
+// @desc    Apply for leave (Employee)
+// @route   POST /api/leaves
+// @access  Private (Employee)
+const applyLeave = async (req, res, next) => {
     try {
-        const query = req.query.status ? { status: req.query.status } : {};
-        // Populate pulls in the employee's name and department from the Employee collection
-        const leaves = await Leave.find(query).populate('employeeId', 'name department empId');
-        
-        res.status(200).json({ success: true, count: leaves.length, data: leaves });
+        const leave = await Leave.create({
+            employeeId: req.user._id,
+            ...req.body,
+            status: 'Pending'
+        });
+        res.status(201).json({ success: true, data: leave });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get all leave requests (Admin)
+// @route   GET /api/leaves
+// @access  Private (Admin)
+const getAllLeaves = async (req, res, next) => {
+    try {
+        const leaves = await Leave.find().populate('employeeId', 'name empId department').sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: leaves });
     } catch (error) {
         next(error);
     }
 };
 
 // @desc    Update leave status (Approve/Reject)
-// @route   PUT /api/leaves/:id
-// @access  Private (Admin only)
+// @route   PUT /api/leaves/:id/status
+// @access  Private (Admin)
 const updateLeaveStatus = async (req, res, next) => {
     try {
-        const { status } = req.body;
-        
-        if (!['Approved', 'Rejected'].includes(status)) {
-            res.status(400);
-            return next(new Error('Invalid status update.'));
-        }
-
         const leave = await Leave.findByIdAndUpdate(
-            req.params.id, 
-            { status }, 
-            { new: true, runValidators: true }
-        ).populate('employeeId', 'name email');
-
-        if (!leave) {
-            res.status(404);
-            return next(new Error('Leave request not found.'));
-        }
-
-        // Trigger instantaneous email to employee notifying them of approval/rejection
-        const message = `Dear ${leave.employeeId.name},\n\nYour leave request for ${leave.type} from ${new Date(leave.startDate).toDateString()} to ${new Date(leave.endDate).toDateString()} has been ${status}.\n\nRegards,\nIOCL Administration`;
-        
-        await sendEmail({
-            email: leave.employeeId.email,
-            subject: `Leave Request ${status}`,
-            message: message
-        });
-
+            req.params.id,
+            { status: req.body.status },
+            { new: true }
+        );
         res.status(200).json({ success: true, data: leave });
     } catch (error) {
         next(error);
     }
 };
 
-module.exports = { getLeaves, updateLeaveStatus };
+// @desc    Get logged-in employee's leaves
+// @route   GET /api/leaves/my-leaves
+// @access  Private (Employee)
+const getMyLeaves = async (req, res, next) => {
+    try {
+        const leaves = await Leave.find({ employeeId: req.user._id }).sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: leaves });
+    } catch (error) {
+        next(error);
+    }
+};
+
+module.exports = { applyLeave, getAllLeaves, updateLeaveStatus, getMyLeaves }; // <-- Update exports

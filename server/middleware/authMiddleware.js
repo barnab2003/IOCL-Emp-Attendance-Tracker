@@ -1,33 +1,39 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../models/Admin');
+const Employee = require('../models/Employee');
 
 const protect = async (req, res, next) => {
     let token;
-
-    // Read token from Authorization header (Format: Bearer <token>)
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
             token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecretkey');
 
-            // Verify the token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            // Fetch the admin payload from the database and append it to the request object
-            req.admin = await Admin.findById(decoded.id);
-            
-            if (!req.admin) {
-                return res.status(401).json({ success: false, message: 'Not authorized, admin not found' });
+            // Attach user data based on role
+            if (decoded.role === 'Admin') {
+                req.user = { id: 'admin_id', role: 'Admin' };
+            } else {
+                req.user = await Employee.findById(decoded.id).select('-password');
+                req.user.role = 'Employee';
             }
-
             next();
         } catch (error) {
-            return res.status(401).json({ success: false, message: 'Not authorized, token invalid or expired' });
+            res.status(401);
+            return next(new Error('Not authorized, token failed'));
         }
-    }
-
-    if (!token) {
-        return res.status(401).json({ success: false, message: 'Not authorized, no token provided' });
+    } else {
+        res.status(401);
+        return next(new Error('Not authorized, no token'));
     }
 };
 
-module.exports = { protect };
+// Middleware to block non-admins
+const adminOnly = (req, res, next) => {
+    if (req.user && req.user.role === 'Admin') {
+        next();
+    } else {
+        res.status(403);
+        return next(new Error('Access denied. Admins only.'));
+    }
+};
+
+module.exports = { protect, adminOnly };

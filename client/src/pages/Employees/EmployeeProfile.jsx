@@ -31,7 +31,7 @@ const EmployeeProfile = () => {
   return (
     <div>
       <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-        <Link to="/employees" style={{ color: 'inherit', textDecoration: 'none' }}>🏠 Directory</Link> / <strong>Profile</strong>
+        <Link to="/employees" style={{ color: 'inherit', textDecoration: 'none' }}>Directory</Link> / <strong>Profile</strong>
       </div>
 
       <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '2rem' }}>

@@ -15,7 +15,10 @@ const getDashboardStats = async (req, res, next) => {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const presentToday = await Attendance.countDocuments({ date: { $gte: today, $lt: tomorrow } });
+        const presentToday = await Attendance.countDocuments({ 
+            date: { $gte: today, $lt: tomorrow },
+            status: 'Present' // <-- Explicitly filter for Present staff
+        });
         const onLeaveToday = await Leave.countDocuments({
             status: 'Approved',
             startDate: { $lte: today },

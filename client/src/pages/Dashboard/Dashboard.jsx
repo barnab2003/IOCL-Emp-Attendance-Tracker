@@ -37,7 +37,7 @@ const Dashboard = () => {
   return (
     <div>
       <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-        🏠 Home / <strong>Dashboard</strong>
+        <strong>Dashboard</strong>
       </div>
       <h2>System Overview</h2>
 
@@ -83,7 +83,7 @@ const Dashboard = () => {
             
             {/* 7-Day Attendance Trend Bar Chart */}
             <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-              <h3 style={{ marginBottom: '1.5rem', color: '#1e293b' }}>Attendance Trend (Last 7 Days)</h3>
+              <h3 style={{ marginBottom: '1.5rem', color: '#1e293b' }}>Attendance Trend</h3>
               <div style={{ width: '100%', height: 300 }}>
                 {stats.attendanceTrend.length > 0 ? (
                   <ResponsiveContainer>
@@ -101,7 +101,7 @@ const Dashboard = () => {
                   </ResponsiveContainer>
                 ) : (
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>
-                    No attendance data for the past 7 days.
+                    No attendance data.
                   </div>
                 )}
               </div>

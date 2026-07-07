@@ -38,6 +38,11 @@ const employeeSchema = new mongoose.Schema({
         required: true,
         default: Date.now
     },
+    password: {
+        type: String,
+        required: true,
+        default: 'iocl123' // Default password for all personnel
+    },
     trainingEndDate: {
         type: Date,
         required: function() {

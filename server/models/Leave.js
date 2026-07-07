@@ -3,13 +3,12 @@ const mongoose = require('mongoose');
 const leaveSchema = new mongoose.Schema({
     employeeId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Employee',
+        ref: 'Employee', // This is the crucial link for .populate()
         required: true
     },
     type: {
         type: String,
-        required: true,
-        enum: ['Sick Leave', 'Casual Leave', 'Earned Leave', 'Maternity/Paternity']
+        required: true
     },
     startDate: {
         type: Date,
@@ -25,8 +24,8 @@ const leaveSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: 'Pending',
-        enum: ['Pending', 'Approved', 'Rejected']
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending'
     }
 }, { timestamps: true });
 

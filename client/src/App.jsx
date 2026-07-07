@@ -17,7 +17,7 @@ import './App.css';
 
 // --- Header Component with Export Feature ---
 const TopHeader = () => {
-  const { admin, logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -42,39 +42,77 @@ const TopHeader = () => {
 
   return (
     <header className="top-header">
-      <input type="text" className="search-bar" placeholder="Search Keyword..." />
+      {/* Spacer to push actions to the right since search is removed */}
+      <div style={{ flex: 1 }}></div> 
+      
       <div className="header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <button onClick={handleExport} className="btn btn-primary" style={{ backgroundColor: '#10b981', color: 'white' }}>
-          ⬇️ Export to Excel
+        <button onClick={handleExport} className="btn btn-primary" style={{ backgroundColor: '#10b981', color: 'white', border: 'none' }}>
+          Export to Excel
         </button>
-        <span>👤 {admin?.username || 'Admin'}</span>
-        <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem' }}>
+        <span style={{ color: 'white', fontWeight: '500' }}>👤 {user?.name || 'User'}</span>
+        <button onClick={handleLogout} className="btn" style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem', backgroundColor: 'transparent', color: 'white', border: '1px solid white' }}>
           Logout
         </button>
       </div>
     </header>
   );
 };
-
 // --- Updated Sidebar Component ---
-const Sidebar = () => (
-  <aside className="sidebar">
-    <div className="sidebar-logo">IOCL Tracker</div>
-    <nav>
-      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', paddingLeft: '1rem' }}>MAIN MENU</div>
-      <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Dashboard</NavLink>
-      <NavLink to="/attendance" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Attendance Logs</NavLink>
-      <NavLink to="/upload" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Data Upload</NavLink>
-      
-      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '1.5rem 0 0.5rem', paddingLeft: '1rem' }}>PEOPLES & TEAMS</div>
-      <NavLink to="/manage-directory" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Manage Directory</NavLink>
-      <NavLink to="/leaves" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Leave Manager</NavLink>
-      <NavLink to="/trainees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trainee Manager</NavLink>
-      <NavLink to="/employees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Register Employee</NavLink>
-    </nav>
-  </aside>
-);
+// --- Updated Sidebar Component ---
+const Sidebar = () => {
+  const { user } = useContext(AuthContext);
+  
+  return (
+    <aside className="sidebar">
+      {/* Updated Brand Area with Logo */}
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '10px', 
+        height: '70px', /* Forces exact alignment with the Top Header */
+        padding: '0 1rem', 
+        borderBottom: '1px solid rgba(255,255,255,0.1)', 
+        boxSizing: 'border-box'
+      }}>
+        <img 
+          src="/indian-oil-corporation-business-petroleum-logo-national-oil-company-business-e69926a18c24eb29c2a0cd05ed3934e9.png" 
+          alt="IOCL Logo" 
+          style={{ width: '40px', height: '40px', objectFit: 'contain' }} 
+        />
+        <div style={{ 
+          color: 'white', 
+          fontSize: '0.85rem', /* Reduced size to accommodate long text */
+          fontWeight: '700', 
+          lineHeight: '1.2', /* Tighter spacing between wrapped lines */
+          letterSpacing: '0.5px' 
+        }}>
+          Human Resource<br/>Management System
+        </div>
+      </div>
 
+      <nav>
+        <div className="sidebar-heading"></div>
+        <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Dashboard</NavLink>
+        
+        <NavLink to="/leaves" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+          {user?.role === 'Admin' ? 'Leave Manager' : 'My Leaves'}
+        </NavLink>
+
+        {user?.role === 'Admin' && (
+          <>
+            <NavLink to="/attendance" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Attendance Logs</NavLink>
+            <NavLink to="/upload" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Data Upload</NavLink>
+            
+            <div className="sidebar-heading" style={{ marginTop: '1.5rem' }}>PEOPLES & TEAMS</div>
+            <NavLink to="/manage-directory" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Manage Directory</NavLink>
+            <NavLink to="/trainees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Trainee Manager</NavLink>
+            <NavLink to="/employees" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>Register Employee</NavLink>
+          </>
+        )}
+      </nav>
+    </aside>
+  );
+};
 // --- Layout Wrapper ---
 const AuthenticatedLayout = ({ children }) => (
   <div className="app-container">

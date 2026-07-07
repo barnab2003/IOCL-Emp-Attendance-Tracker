@@ -38,7 +38,7 @@ const DataUpload = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>🏠 Home / <strong>Data Upload</strong></div>
+      <div style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}><strong>Data Upload</strong></div>
       <h2>Bulk Data Import</h2>
 
       <div className="upload-container">
