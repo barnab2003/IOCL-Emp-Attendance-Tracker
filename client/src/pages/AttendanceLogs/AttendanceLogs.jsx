@@ -38,8 +38,8 @@ const AttendanceLogs = () => {
               <th>Employee Name</th>
               <th>Department</th>
               <th>Status</th>
-              <th>Check In</th>
-              <th>Check Out</th>
+              <th>Total Punches</th>
+              <th>Work Hours</th>
             </tr>
           </thead>
           <tbody>
